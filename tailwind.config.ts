@@ -14,6 +14,7 @@ export default {
           DEFAULT: "#1A1F2C",
           secondary: "#2C3E50"
         },
+        foreground: "hsl(var(--foreground))",
         accent: {
           DEFAULT: "#1EAEDB",
           hover: "#33C3F0"
