@@ -12,17 +12,20 @@ export const TypingText = ({ text, typedText }: TypingTextProps) => {
       const isTyped = index < typedText.length;
       const isCorrect = isTyped && char === typedText[index];
       const isWrong = isTyped && char !== typedText[index];
+      const isCurrent = index === typedText.length;
 
       return (
         <span
           key={index}
           className={`text-2xl font-medium transition-all ${
-            isTyped
+            isCurrent
+              ? 'border-b-2 border-accent animate-pulse'
+              : isTyped
               ? isCorrect
-                ? 'text-accent animate-float'
+                ? 'text-accent'
                 : 'text-red-500'
               : 'text-text-secondary'
-          }`}
+          } ${isCurrent ? 'animate-pulse' : ''}`}
         >
           {char}
         </span>
@@ -30,7 +33,9 @@ export const TypingText = ({ text, typedText }: TypingTextProps) => {
     });
   };
 
-  return <div className="min-h-[100px] text-center leading-relaxed tracking-wide">
-    {renderText()}
-  </div>;
+  return (
+    <div className="min-h-[100px] text-center leading-relaxed tracking-wide p-6 backdrop-blur-xs bg-white/5 rounded-lg mb-6">
+      {renderText()}
+    </div>
+  );
 };
