@@ -11,17 +11,17 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: {
-          DEFAULT: "#1A1F2C",
-          secondary: "#2C3E50"
+          DEFAULT: "#0F172A", // Dark blue background
+          secondary: "#1E293B"
         },
         foreground: "hsl(var(--foreground))",
         accent: {
-          DEFAULT: "#1EAEDB",
-          hover: "#33C3F0"
+          DEFAULT: "#8B5CF6", // Vibrant purple
+          hover: "#7C3AED"
         },
         text: {
           DEFAULT: "#FFFFFF",
-          secondary: "#9F9EA1"
+          secondary: "#94A3B8"
         }
       },
       fontFamily: {
@@ -37,14 +37,19 @@ export default {
           '100%': { opacity: '0', transform: 'translateY(-20px)' }
         },
         glow: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.5' }
+          '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)' },
+          '50%': { opacity: '0.7', boxShadow: '0 0 30px rgba(139, 92, 246, 0.8)' }
+        },
+        pulse: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.05)' }
         }
       },
       animation: {
         float: 'float 3s ease-in-out infinite',
         fadeOut: 'fadeOut 0.5s ease-out forwards',
-        glow: 'glow 2s ease-in-out infinite'
+        glow: 'glow 2s ease-in-out infinite',
+        pulse: 'pulse 2s ease-in-out infinite'
       },
       backdropBlur: {
         xs: '2px'
