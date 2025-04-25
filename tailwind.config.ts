@@ -7,15 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: {
-          DEFAULT: "hsl(var(--border))"
-        },
-        input: {
-          DEFAULT: "hsl(var(--input))"
-        },
-        ring: {
-          DEFAULT: "hsl(var(--ring))"
-        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
         background: {
           DEFAULT: "#1A1F2C",
           secondary: "#2C3E50"
