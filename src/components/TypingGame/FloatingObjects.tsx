@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text3D, Float } from '@react-three/drei';
+import * as THREE from 'three';
 
 interface FloatingLetterProps {
   letter: string;
@@ -30,7 +31,7 @@ const FloatingLetter = ({ letter, position }: FloatingLetterProps) => {
         bevelSize={0.02}
         bevelOffset={0}
         bevelSegments={5}
-        font="/fonts/Inter_Bold.json"
+        font="/fonts/helvetiker_regular.typeface.json"
       >
         {letter}
         <meshStandardMaterial color="#1EAEDB" />
