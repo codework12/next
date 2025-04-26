@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+<<<<<<< HEAD
 import { useResponsive } from '@/hooks/use-responsive';
 import { Progress } from '@/components/ui/progress';
+=======
+>>>>>>> caffdb8 (add)
 
 export interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -18,7 +21,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onComboChange,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+<<<<<<< HEAD
   const { isPortrait } = useResponsive();
+=======
+>>>>>>> caffdb8 (add)
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,6 +73,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         this.isHealing = isHealing;
       }
       draw() {
+<<<<<<< HEAD
         ctx.font = '26px MedievalSharp';
         ctx.fillStyle = this.isHealing ? '#FFD700' : '#E2E8F0';
         ctx.fillText(this.text, this.x, this.y);
@@ -75,6 +82,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           ctx.fillStyle = this.isHealing ? '#FFA500' : '#00CED1';
           ctx.shadowColor = this.isHealing ? '#FFA500' : '#00CED1';
           ctx.shadowBlur = 15;
+=======
+        ctx.fillStyle = this.isHealing ? 'yellow' : 'white';
+        ctx.font = '26px monospace';
+        ctx.fillText(this.text, this.x, this.y);
+        if (currentWord === this) {
+          ctx.fillStyle = this.isHealing ? '#ffff66' : 'cyan';
+          ctx.shadowColor = this.isHealing ? '#ffff66' : 'cyan';
+          ctx.shadowBlur = 10;
+>>>>>>> caffdb8 (add)
           ctx.fillText(this.text.substring(0, typedIndex), this.x, this.y);
           ctx.shadowBlur = 0;
         }
@@ -143,6 +159,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     };
 
     const drawHealthBar = (x: number, y: number, w: number, h: number, val: number, col: string, label: string) => {
+<<<<<<< HEAD
       const barHeight = 12;
       const cornerRadius = 6;
       
@@ -179,6 +196,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       shine.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = shine;
       ctx.fill();
+=======
+      ctx.fillStyle = 'gray'; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = col; ctx.fillRect(x, y, Math.max(0, val), h);
+      ctx.fillStyle = 'white'; ctx.font = '12px monospace'; ctx.fillText(label, x, y - 4);
+>>>>>>> caffdb8 (add)
     };
 
     const updateWPM = () => {
@@ -200,6 +222,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       onGameOver();
     };
 
+<<<<<<< HEAD
     // Animate background
     let bgShiftX = 0;
     const animateBackground = () => {
@@ -214,10 +237,13 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       }
     };
 
+=======
+>>>>>>> caffdb8 (add)
     let frameId: number;
     const gameLoop = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+<<<<<<< HEAD
       // Animated background
       animateBackground();
       
@@ -231,6 +257,13 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         ctx.lineTo(mountainX, canvas.height - mountainHeight);
         ctx.lineTo(mountainX + 100, canvas.height);
         ctx.fill();
+=======
+      // background
+      if (bgImage.complete) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#0f0f2f'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+>>>>>>> caffdb8 (add)
       }
 
       // ground
