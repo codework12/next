@@ -1,6 +1,4 @@
-
 import React, { useEffect, useRef } from 'react';
-import { useResponsive } from '@/hooks/use-responsive';
 
 export interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -18,7 +16,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onComboChange,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { isMobile, isTablet } = useResponsive();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,11 +64,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         this.isHealing = isHealing;
       }
       draw() {
-        // Scale font size based on screen dimensions
-        const fontSize = isMobile ? 20 : isTablet ? 24 : 26;
-        
         ctx.fillStyle = this.isHealing ? 'yellow' : 'white';
-        ctx.font = `${fontSize}px monospace`;
+        ctx.font = '26px monospace';
         ctx.fillText(this.text, this.x, this.y);
         if (currentWord === this) {
           ctx.fillStyle = this.isHealing ? '#ffff66' : 'cyan';
@@ -83,7 +77,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       }
       update() {
         this.x -= this.speed;
-        if (this.x <= (isMobile ? 60 : 80)) {
+        if (this.x <= 80) {
           activeWords = activeWords.filter(w => w !== this);
           playerHP -= 10 + level;
           combo = 0;
@@ -102,7 +96,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       speed = 25;
       damage: number;
       hit = false;
-      hitFrames = 0; // extra frames after hit
+      hitFrames = 0; // NEW: extra frames after hit
     
       constructor(x: number, y: number, img: HTMLImageElement, w: number, h: number, damage: number) {
         this.x = x;
@@ -116,7 +110,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       update() {
         if (!this.hit) {
           this.x += this.speed;
-          if (this.x >= canvas.width - (isMobile ? 60 : 80)) {
+          if (this.x >= canvas.width - 80) {
             this.hit = true;
             this.hitFrames = 5; // show for 5 frames after hit
             enemyFlashTimer = 5;
@@ -133,27 +127,21 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       }
     }
     
+
     const spawnWord = () => {
       const words = ['fire','ice','storm','rune','portal','spell','magic','dark','light','burn','time','zap','chaos','nova'];
       const text = words[Math.floor(Math.random() * words.length)];
-      // Adjust positions for mobile
-      const yPosition = isMobile ? canvas.height - 100 : canvas.height - 120;
-      const xPosition = canvas.width - (isMobile ? 60 : 80);
+      const y = canvas.height - 120;
+      const x = canvas.width - 80;
       const speed = wordSpeedBase + Math.random() * 0.5;
       const isHealing = Math.random() < 0.2;
-      activeWords.push(new Word(text, xPosition, yPosition, speed, isHealing));
+      activeWords.push(new Word(text, x, y, speed, isHealing));
     };
 
     const drawHealthBar = (x: number, y: number, w: number, h: number, val: number, col: string, label: string) => {
-      // Scale health bar size for mobile
-      const barWidth = isMobile ? w * 0.8 : w;
-      const barHeight = isMobile ? h * 0.8 : h;
-      const fontSize = isMobile ? 10 : 12;
-      
-      ctx.fillStyle = 'gray'; ctx.fillRect(x, y, barWidth, barHeight);
-      ctx.fillStyle = col; ctx.fillRect(x, y, Math.max(0, (val / 100) * barWidth), barHeight);
-      ctx.fillStyle = 'white'; ctx.font = `${fontSize}px monospace`; 
-      ctx.fillText(label, x, y - 4);
+      ctx.fillStyle = 'gray'; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = col; ctx.fillRect(x, y, Math.max(0, val), h);
+      ctx.fillStyle = 'white'; ctx.font = '12px monospace'; ctx.fillText(label, x, y - 4);
     };
 
     const updateWPM = () => {
@@ -193,112 +181,32 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         ctx.fillStyle = '#333'; ctx.fillRect(bgOffset + i * 40, canvas.height - 0, 40, 40);
       }
 
-      // Calculate character positioning for responsive layout
-      const characterScale = isMobile ? 0.7 : isTablet ? 0.85 : 1;
-      const characterWidth = 265 * characterScale;
-      const characterHeight = 300 * characterScale;
-      
-      // Center characters vertically on mobile
-      let enemyYPos = isMobile ? 
-        canvas.height - (characterHeight * 0.9) : 
-        canvas.height - 319;
-        
-      let playerYPos = isMobile ? 
-        canvas.height - (characterHeight * 0.9) : 
-        canvas.height - 319;
-
       // enemy
       if (enemyImg.complete) {
         if (enemyFlashTimer > 0) {
           ctx.globalAlpha = 0.7;
-          ctx.drawImage(
-            enemyImg, 
-            canvas.width - (characterWidth * 0.9), 
-            enemyYPos, 
-            characterWidth, 
-            characterHeight
-          );
+          ctx.drawImage(enemyImg, canvas.width - 250, canvas.height - 319, 265, 300);
           ctx.globalAlpha = 1;
           enemyFlashTimer--;
         } else {
-          ctx.drawImage(
-            enemyImg, 
-            canvas.width - (characterWidth * 0.9), 
-            enemyYPos, 
-            characterWidth, 
-            characterHeight
-          );
+          ctx.drawImage(enemyImg, canvas.width - 250, canvas.height - 319, 265, 300);
         }
       }
-      
-      // Adjust health bar positions for mobile
-      const enemyHealthX = isMobile ? 
-        canvas.width - 110 : 
-        canvas.width - 140;
-      
-      const enemyHealthY = isMobile ? 
-        canvas.height - 140 : 
-        canvas.height - 180;
-        
-      drawHealthBar(
-        enemyHealthX, 
-        enemyHealthY, 
-        100, 
-        10, 
-        enemyHP, 
-        'red', 
-        'ENEMY'
-      );
+      drawHealthBar(canvas.width - 140, canvas.height - 180, 100, 10, enemyHP, 'red', 'ENEMY');
 
       // player
-      if (characterImg.complete) {
-        ctx.drawImage(
-          characterImg, 
-          isMobile ? 10 : 20, 
-          playerYPos, 
-          characterWidth, 
-          characterHeight
-        );
-      }
-      
-      const playerHealthX = isMobile ? 10 : 20;
-      const playerHealthY = isMobile ? 
-        canvas.height - 140 : 
-        canvas.height - 180;
-        
-      drawHealthBar(
-        playerHealthX, 
-        playerHealthY, 
-        100, 
-        10, 
-        playerHP, 
-        'lime', 
-        'YOU'
-      );
+      if (characterImg.complete) ctx.drawImage(characterImg, 20, canvas.height - 319, 255, 300);
+      drawHealthBar(20, canvas.height - 180, 100, 10, playerHP, 'lime', 'YOU');
 
       activeWords.forEach(w => { w.update(); w.draw(); });
-      
-      // Scale projectiles for mobile
-      projectiles.forEach(p => { 
-        if (isMobile) {
-          p.w = 200;
-          p.h = 120;
-        }
-        p.update(); 
-        p.draw(); 
-      });
+      projectiles.forEach(p => { p.update(); p.draw(); });
       projectiles = projectiles.filter(p => !p.hit && p.x < canvas.width);
 
       updateWPM();
       frameId = requestAnimationFrame(gameLoop);
     };
 
-    // Adjust spawn interval for mobile (slightly slower)
-    const spawnInterval = setInterval(
-      spawnWord, 
-      isMobile ? 2400 : 2000
-    );
-    
+    const spawnInterval = setInterval(spawnWord, 2000);
     gameLoop();
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -317,26 +225,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           score += combo;
           onScoreChange(score);
           if (currentWord.isHealing) playerHP = Math.min(100, playerHP + 20);
-          else {
-            // Adjust projectile position for mobile
-            const projY = isMobile ? 
-              canvas.height - (characterHeight * 0.55) : 
-              canvas.height - 230;
-              
-            const projSize = isMobile ? 200 : 255;
-            const projHeight = isMobile ? 120 : 160;
-            
-            projectiles.push(
-              new Projectile(
-                isMobile ? 60 : 80, 
-                projY, 
-                slashImg, 
-                projSize, 
-                projHeight, 
-                10 + level
-              )
-            );
-          }
+          else projectiles.push(new Projectile(80, canvas.height - 230, slashImg, 255, 160, 10 + level));
           currentWord = null;
           typedIndex = 0;
         }
@@ -362,7 +251,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('resize', handleResize);
     };
-  }, [isMobile, isTablet, onComboChange, onGameOver, onLevelChange, onScoreChange, onWpmChange]);
+  }, []);
 
   return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
 };
