@@ -3,57 +3,89 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
+  prefix: "",
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: "#0F172A", // Dark blue background
-          secondary: "#1E293B"
-        },
+        background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
         accent: {
-          DEFAULT: "#8B5CF6", // Vibrant purple
-          hover: "#7C3AED"
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
-        text: {
-          DEFAULT: "#FFFFFF",
-          secondary: "#94A3B8"
-        }
       },
-      fontFamily: {
-        sans: ["-apple-system", "BlinkMacSystemFont", "San Francisco", "Helvetica Neue", "sans-serif"],
+      backgroundImage: {
+        'cyber-grid': 'linear-gradient(to right, rgb(var(--primary) / 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--primary) / 0.1) 1px, transparent 1px)',
+        'radial-gradient': 'radial-gradient(circle at 50% 0%, rgb(var(--primary) / 0.15), transparent 70%)',
       },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' }
-        },
-        fadeOut: {
-          '0%': { opacity: '1', transform: 'translateY(0)' },
-          '100%': { opacity: '0', transform: 'translateY(-20px)' }
-        },
-        glow: {
-          '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(139, 92, 246, 0.5)' },
-          '50%': { opacity: '0.7', boxShadow: '0 0 30px rgba(139, 92, 246, 0.8)' }
-        },
-        pulse: {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' }
-        }
+      backgroundSize: {
+        'grid': '30px 30px',
       },
       animation: {
-        float: 'float 3s ease-in-out infinite',
-        fadeOut: 'fadeOut 0.5s ease-out forwards',
-        glow: 'glow 2s ease-in-out infinite',
-        pulse: 'pulse 2s ease-in-out infinite'
+        'float': 'float 3s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'matrix-text': 'matrix-text 10s linear infinite',
+        'tilt': 'tilt 10s infinite linear',
       },
-      backdropBlur: {
-        xs: '2px'
-      }
+      keyframes: {
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { 
+            boxShadow: '0 0 20px rgb(var(--primary) / 0.5)',
+            transform: 'scale(1)'
+          },
+          '50%': { 
+            boxShadow: '0 0 30px rgb(var(--primary) / 0.7)',
+            transform: 'scale(1.02)'
+          },
+        },
+        'matrix-text': {
+          '0%': { 
+            textShadow: '0 0 5px rgb(var(--primary) / 0.8), 0 0 10px rgb(var(--primary) / 0.4)' 
+          },
+          '50%': { 
+            textShadow: '0 0 15px rgb(var(--primary) / 1), 0 0 20px rgb(var(--primary) / 0.6)' 
+          },
+          '100%': { 
+            textShadow: '0 0 5px rgb(var(--primary) / 0.8), 0 0 10px rgb(var(--primary) / 0.4)' 
+          },
+        },
+        'tilt': {
+          '0%, 100%': { transform: 'rotate(-1deg)' },
+          '50%': { transform: 'rotate(1deg)' },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
