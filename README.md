@@ -8,7 +8,7 @@
 
 There are several ways of editing your application.
 
-**Use Lovable**
+**Use Typecraft*1*
 
 Simply visit the [Lovable Project](https://lovable.dev/projects/c7843326-1aa5-4eba-b589-39abff7d0f23) and start prompting.
 
