@@ -23,6 +23,20 @@ interface GameModeProps {
   icon: React.ReactNode;
 }
 
+// Function to determine the badge color based on difficulty
+const getDifficultyColor = (difficulty: 'easy' | 'medium' | 'hard'): string => {
+  switch (difficulty) {
+    case 'easy':
+      return 'bg-green-500';
+    case 'medium':
+      return 'bg-yellow-500';
+    case 'hard':
+      return 'bg-red-500';
+    default:
+      return 'bg-blue-500';
+  }
+};
+
 const GameModeSelection = () => {
   const navigate = useNavigate();
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
