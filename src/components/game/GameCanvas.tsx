@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { useResponsive } from '@/hooks/use-responsive';
 
@@ -51,6 +50,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     const characterImg = new Image(); characterImg.src = '/character.png';
     const enemyImg = new Image(); enemyImg.src = '/character2.png';
     const slashImg = new Image(); slashImg.src = '/slash.png';
+
+    // Calculate character dimensions once
+    const characterScale = isMobile ? 0.7 : isTablet ? 0.85 : 1;
+    const characterWidth = 265 * characterScale;
+    const characterHeight = 300 * characterScale;
 
     // Define classes inside effect
     class Word {
@@ -194,9 +198,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       }
 
       // Calculate character positioning for responsive layout
-      const characterScale = isMobile ? 0.7 : isTablet ? 0.85 : 1;
-      const characterWidth = 265 * characterScale;
-      const characterHeight = 300 * characterScale;
+      // We now use the pre-calculated characterHeight variable
       
       // Center characters vertically on mobile
       let enemyYPos = isMobile ? 
