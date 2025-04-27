@@ -40,16 +40,14 @@
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@react-three/drei": "^9.77.3",
+    "@react-three/fiber": "^8.18.0",
     "@tanstack/react-query": "^5.56.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
-<<<<<<< HEAD
     "framer-motion": "^12.9.2",
-=======
->>>>>>> caffdb8 (add)
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
@@ -64,6 +62,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.149.0",
+    "use-sound": "^5.0.0",
     "vaul": "^0.9.3",
     "zod": "^3.23.8"
   },

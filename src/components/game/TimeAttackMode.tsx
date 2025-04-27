@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { CyberParticles } from '@/components/CyberParticles';
 import { GameModel3D } from '@/components/GameModel3D';
 import { Progress } from '@/components/ui/progress';
-import { Hourglass, Sparkles } from 'lucide-react';
+import { Hourglass, Sparkles, Zap } from 'lucide-react';
 
 interface TimeAttackProps {
   onScoreChange: (score: number) => void;
@@ -20,6 +21,7 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
   const [totalCharacters, setTotalCharacters] = useState(0);
   const [sentenceHistory, setSentenceHistory] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
   const { toast } = useToast();
 
   const sentences = [
@@ -79,9 +81,10 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
     if (input === currentSentence) {
       setTotalCharacters(prev => prev + currentSentence.length);
       
-      // Fix: Call onScoreChange with a direct number rather than a function
-      const scoreToAdd = currentSentence.length;
-      onScoreChange(scoreToAdd);
+      // Calculate score
+      const scoreToAdd = currentSentence.length * 10;
+      setScore(prev => prev + scoreToAdd);
+      onScoreChange(score + scoreToAdd);
       
       const elapsedMinutes = (Date.now() - (startTime || Date.now())) / 60000;
       const wpm = Math.round(totalCharacters / 5 / elapsedMinutes);
@@ -93,7 +96,7 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
       // Show toast with animation
       toast({
         title: "Perfect!",
-        description: "Sentence completed correctly!",
+        description: `+${scoreToAdd} points!`,
         duration: 1000,
         className: "bg-gradient-to-r from-primary/20 to-secondary/20 border-primary"
       });
@@ -107,6 +110,13 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
 
   // Calculate progress percentage
   const progressPercentage = (userInput.length / currentSentence.length) * 100;
+  
+  // Time-based classes
+  const getTimeClass = () => {
+    if (timeLeft > 40) return "text-green-400";
+    if (timeLeft > 20) return "text-yellow-400";
+    return "text-red-400 animate-pulse";
+  }
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-background">
@@ -147,7 +157,7 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
         className="relative mb-14 mt-12"
       >
         <div className="absolute -inset-6 bg-primary/20 rounded-full blur-xl animate-pulse-glow"></div>
-        <div className="relative z-10 text-7xl font-bold orbitron bg-gradient-to-b from-white to-primary/60 bg-clip-text text-transparent">
+        <div className={`relative z-10 text-7xl font-bold orbitron bg-gradient-to-b from-white to-primary/60 bg-clip-text text-transparent ${getTimeClass()}`}>
           {timeLeft}
           <span className="text-2xl ml-1 font-light">s</span>
         </div>
@@ -248,6 +258,28 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
           </div>
         </motion.div>
       </div>
+
+      {/* Score Display */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="absolute bottom-8 right-8 flex items-center gap-2 bg-black/60 p-3 rounded-xl border border-primary/40"
+      >
+        <Zap className="w-5 h-5 text-primary" />
+        <span className="text-xl font-orbitron text-primary">Score:</span>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={score}
+            initial={{ scale: 1.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="text-xl font-orbitron text-white"
+          >
+            {score}
+          </motion.span>
+        </AnimatePresence>
+      </motion.div>
 
       {/* Tech Scanline Effect */}
       <div className="tech-scanline"></div>
