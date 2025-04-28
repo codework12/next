@@ -1,7 +1,7 @@
 
 # Welcome to you my project
 
-## Project info
+## Project info **
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 -
@@ -16,7 +16,7 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server with auto-reloading and an instant preview. 
 npx vite
 
 **Edit a file directly in GitHub**
