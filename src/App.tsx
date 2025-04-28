@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import Game from "./pages/Game";
 import GameModeSelection from "./pages/GameModeSelection";
 import NotFound from "./pages/NotFound";
-
+import { Analytics } from "@vercel/analytics/react"
 function App() {
   // Create a client
   const queryClient = new QueryClient();

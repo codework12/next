@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameCanvas } from '@/components/game/GameCanvas';
 import { GameUI } from '@/components/game/GameUI';
-import { ComboDisplay } from '@/components/game/ComboDisplay';
 import { GameOver } from '@/components/game/GameOver';
 import { ModeIndicator } from '@/components/game/ModeIndicator';
 import { AncientBackground } from '@/components/game/AncientBackground';
@@ -20,6 +19,7 @@ const Game = () => {
   const [isGameOver, setIsGameOver] = useState(false);
   const [gameMode, setGameMode] = useState('classic');
   const [isVisible, setIsVisible] = useState(false);
+  const [difficulty, setDifficulty] = useState<'easy' | 'mid' | 'crazy'>('mid'); // Fix type here
   
   useEffect(() => {
     // Check if player name exists
@@ -35,13 +35,19 @@ const Game = () => {
       setGameMode(selectedMode);
     }
     
+    // Get selected difficulty from localStorage
+    const selectedDifficulty = localStorage.getItem('selectedDifficulty') as 'easy' | 'mid' | 'crazy' | null;
+    if (selectedDifficulty && (selectedDifficulty === 'easy' || selectedDifficulty === 'mid' || selectedDifficulty === 'crazy')) {
+      setDifficulty(selectedDifficulty);
+    }
+    
     // Fade in animation
     setTimeout(() => setIsVisible(true), 100);
     
     // Welcome message
     toast({
       title: "Game Started!",
-      description: `Welcome ${playerName} to ${selectedMode || 'classic'} mode`,
+      description: `Welcome ${playerName} to ${selectedMode || 'classic'} mode${selectedDifficulty ? ` (${selectedDifficulty} difficulty)` : ''}`,
       duration: 3000
     });
     
@@ -92,10 +98,9 @@ const Game = () => {
               onWpmChange={setWpm}
               onGameOver={handleGameOver}
               onComboChange={setCombo}
+              difficulty={difficulty}
             />
             <GameUI score={score} level={level} wpm={wpm} />
-            <ComboDisplay combo={combo} />
-            <ModeIndicator mode={gameMode} />
           </>
         );
     }
@@ -107,7 +112,7 @@ const Game = () => {
         renderGameMode()
       ) : (
         <GameOver 
-          score={score}
+          finalScore={score}
           wpm={wpm}
           level={level}
           onRestart={handleRetry}
