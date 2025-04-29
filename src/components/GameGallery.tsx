@@ -10,12 +10,10 @@ const gameScreenshots = [
     id: 1,
     title: "Combat Mode Leaderboard",
     description: "Top warriors in the cybernetic arena",
-    status: "ACTIVE",
     theme: {
       primary: "from-violet-500 to-purple-600",
       secondary: "from-indigo-400 to-violet-500",
-      accent: "#8b5cf6",
-      statusColor: "bg-green-500"
+      accent: "#8b5cf6"
     },
     leaderboard: [
       { rank: 1, name: "CYBER_WARRIOR", score: 12500, wpm: 98, level: 25, avatar: "https://i.pravatar.cc/100?img=1" },
@@ -29,31 +27,27 @@ const gameScreenshots = [
     id: 2,
     title: "Time Attack Leaderboard",
     description: "Speed demons of the digital realm",
-    status: "CRITICAL",
     theme: {
       primary: "from-red-500 to-rose-600",
       secondary: "from-orange-400 to-red-500",
-      accent: "#ef4444",
-      statusColor: "bg-red-500"
+      accent: "#ef4444"
     },
     leaderboard: [
-      { rank: 1, name: "SPEED_DEMON", score: 15000, wpm: 120, time: "01:23", avatar: "https://i.pravatar.cc/100?img=6" },
-      { rank: 2, name: "TIME_BENDER", score: 14500, wpm: 118, time: "01:25", avatar: "https://i.pravatar.cc/100?img=7" },
-      { rank: 3, name: "CHRONO_MASTER", score: 14000, wpm: 115, time: "01:28", avatar: "https://i.pravatar.cc/100?img=8" },
-      { rank: 4, name: "TEMPORAL_RUSH", score: 13500, wpm: 112, time: "01:30", avatar: "https://i.pravatar.cc/100?img=9" },
-      { rank: 5, name: "QUANTUM_SPEED", score: 13000, wpm: 110, time: "01:32", avatar: "https://i.pravatar.cc/100?img=10" }
+      { rank: 1, name: "SPEED_DEMON", accuracy: 98, wpm: 120, time: "60s", avatar: "https://i.pravatar.cc/100?img=6" },
+      { rank: 2, name: "TIME_BENDER", accuracy: 96, wpm: 118, time: "60s", avatar: "https://i.pravatar.cc/100?img=7" },
+      { rank: 3, name: "CHRONO_MASTER", accuracy: 95, wpm: 115, time: "60s", avatar: "https://i.pravatar.cc/100?img=8" },
+      { rank: 4, name: "TEMPORAL_RUSH", accuracy: 94, wpm: 112, time: "60s", avatar: "https://i.pravatar.cc/100?img=9" },
+      { rank: 5, name: "QUANTUM_SPEED", accuracy: 93, wpm: 110, time: "60s", avatar: "https://i.pravatar.cc/100?img=10" }
     ]
   },
   {
     id: 3,
     title: "Zen Mode Leaderboard",
     description: "Masters of neural harmony",
-    status: "STABLE",
     theme: {
       primary: "from-cyan-500 to-blue-600",
       secondary: "from-blue-400 to-cyan-500",
-      accent: "#0ea5e9",
-      statusColor: "bg-blue-500"
+      accent: "#0ea5e9"
     },
     leaderboard: [
       { rank: 1, name: "ZEN_MASTER", score: 20000, wpm: 85, streak: 150, avatar: "https://i.pravatar.cc/100?img=11" },
@@ -95,62 +89,6 @@ export const GameGallery = () => {
   const currentTheme = useMemo(() => {
     return gameScreenshots[activeIndex].theme;
   }, [activeIndex]);
-
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case "ACTIVE": return (
-        <div className="flex items-center gap-1.5 bg-black/30 px-2.5 py-1 rounded-full backdrop-blur-sm">
-          <motion.div 
-            className={`w-2 h-2 rounded-full bg-green-500`}
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.7, 1, 0.7]
-            }}
-            transition={{ 
-              duration: 1.5, 
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <span className="text-xs font-syncopate text-white/70 tracking-wider">{status}</span>
-        </div>
-      );
-      case "CRITICAL": return (
-        <div className="flex items-center gap-1.5 bg-black/30 px-2.5 py-1 rounded-full backdrop-blur-sm">
-          <motion.div 
-            className={`w-2 h-2 rounded-full bg-red-500`}
-            animate={{ 
-              scale: [1, 1.5, 1],
-              opacity: [0.7, 1, 0.7]
-            }}
-            transition={{ 
-              duration: 0.8, 
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <span className="text-xs font-syncopate text-white/70 tracking-wider">{status}</span>
-        </div>
-      );
-      default: return (
-        <div className="flex items-center gap-1.5 bg-black/30 px-2.5 py-1 rounded-full backdrop-blur-sm">
-          <motion.div 
-            className={`w-2 h-2 rounded-full bg-blue-500`}
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.7, 1, 0.7]
-            }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <span className="text-xs font-syncopate text-white/70 tracking-wider">{status}</span>
-        </div>
-      );
-    }
-  };
 
   // Generate rank icon
   const getRankIcon = (rank: number) => {
@@ -309,10 +247,6 @@ export const GameGallery = () => {
                         </motion.h3>
                       </div>
                       
-                      <div className="absolute top-1 right-0 flex items-center gap-2">
-                        {getStatusBadge(screenshot.status)}
-                      </div>
-                      
                       <motion.p 
                         className="text-white/60 mt-3 mb-6 text-center font-rajdhani text-lg relative z-10 tracking-wide"
                         animate={{
@@ -371,8 +305,17 @@ export const GameGallery = () => {
                           <span>Player</span>
                         </div>
                         <div className="col-span-3 text-primary flex items-center justify-center">
-                          <Star className="w-4 h-4 mr-1" />
-                          <span>Score</span>
+                          {screenshot.id === 2 ? (
+                            <>
+                              <Sparkles className="w-4 h-4 mr-1" />
+                              <span>Accuracy</span>
+                            </>
+                          ) : (
+                            <>
+                              <Star className="w-4 h-4 mr-1" />
+                              <span>Score</span>
+                            </>
+                          )}
                         </div>
                         <div 
                           className="col-span-2 text-primary flex items-center justify-center cursor-pointer group"
@@ -559,7 +502,7 @@ export const GameGallery = () => {
                               </div>
                             </div>
                             
-                            {/* Score with animation for top players */}
+                            {/* Score/Accuracy Column */}
                             <div className="col-span-3 py-4">
                               <motion.div 
                                 className="flex items-center justify-center font-audiowide"
@@ -577,16 +520,31 @@ export const GameGallery = () => {
                                 }}
                               >
                                 <div className="relative">
-                                  <span className="text-xl font-bold" style={{ color: player.rank <= 3 ? `${currentTheme.accent}` : 'white' }}>
-                                    {Math.floor(player.score / 1000)}
-                                  </span>
-                                  <span className="text-white/80">,</span>
-                                  <span className="text-white/90">{String(player.score % 1000).padStart(3, '0')}</span>
+                                  {screenshot.id === 2 ? (
+                                    // Display accuracy for Time Attack
+                                    <span className="text-xl font-bold" style={{ color: player.rank <= 3 ? `${currentTheme.accent}` : 'white' }}>
+                                      {player.accuracy}%
+                                    </span>
+                                  ) : (
+                                    // Display score for other modes
+                                    <>
+                                      <span className="text-xl font-bold" style={{ color: player.rank <= 3 ? `${currentTheme.accent}` : 'white' }}>
+                                        {Math.floor(player.score / 1000)}
+                                      </span>
+                                      <span className="text-white/80">,</span>
+                                      <span className="text-white/90">{String(player.score % 1000).padStart(3, '0')}</span>
+                                    </>
+                                  )}
                                   
-                                  {/* Score bar indicator */}
+                                  {/* Progress bar indicator */}
                                   <motion.div 
                                     className="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full"
-                                    style={{ backgroundColor: currentTheme.accent, width: `${(player.score / gameScreenshots[activeIndex].leaderboard[0].score) * 100}%` }}
+                                    style={{ 
+                                      backgroundColor: currentTheme.accent, 
+                                      width: screenshot.id === 2 ? 
+                                        `${(player.accuracy / 100) * 100}%` : 
+                                        `${(player.score / gameScreenshots[activeIndex].leaderboard[0].score) * 100}%` 
+                                    }}
                                     animate={{
                                       opacity: [0.3, 0.7, 0.3]
                                     }}
@@ -779,4 +737,3 @@ export const GameGallery = () => {
     </div>
   );
 };
-
