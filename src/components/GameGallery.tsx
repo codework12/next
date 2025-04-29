@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, Zap, Shield, Award, Sparkles } from "lucide-react";
+import { Trophy, Star, Zap, Shield, Award, Sparkles, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const gameScreenshots = [
@@ -18,11 +18,11 @@ const gameScreenshots = [
       statusColor: "bg-green-500"
     },
     leaderboard: [
-      { rank: 1, name: "CYBER_WARRIOR", score: 12500, wpm: 98, level: 25 },
-      { rank: 2, name: "NEURAL_HUNTER", score: 11800, wpm: 95, level: 24 },
-      { rank: 3, name: "SYSTEM_OVERRIDE", score: 11200, wpm: 92, level: 23 },
-      { rank: 4, name: "BINARY_BLADE", score: 10800, wpm: 90, level: 22 },
-      { rank: 5, name: "QUANTUM_STRIKE", score: 10500, wpm: 88, level: 21 }
+      { rank: 1, name: "CYBER_WARRIOR", score: 12500, wpm: 98, level: 25, avatar: "https://i.pravatar.cc/100?img=1" },
+      { rank: 2, name: "NEURAL_HUNTER", score: 11800, wpm: 95, level: 24, avatar: "https://i.pravatar.cc/100?img=2" },
+      { rank: 3, name: "SYSTEM_OVERRIDE", score: 11200, wpm: 92, level: 23, avatar: "https://i.pravatar.cc/100?img=3" },
+      { rank: 4, name: "BINARY_BLADE", score: 10800, wpm: 90, level: 22, avatar: "https://i.pravatar.cc/100?img=4" },
+      { rank: 5, name: "QUANTUM_STRIKE", score: 10500, wpm: 88, level: 21, avatar: "https://i.pravatar.cc/100?img=5" }
     ]
   },
   {
@@ -37,11 +37,11 @@ const gameScreenshots = [
       statusColor: "bg-red-500"
     },
     leaderboard: [
-      { rank: 1, name: "SPEED_DEMON", score: 15000, wpm: 120, time: "01:23" },
-      { rank: 2, name: "TIME_BENDER", score: 14500, wpm: 118, time: "01:25" },
-      { rank: 3, name: "CHRONO_MASTER", score: 14000, wpm: 115, time: "01:28" },
-      { rank: 4, name: "TEMPORAL_RUSH", score: 13500, wpm: 112, time: "01:30" },
-      { rank: 5, name: "QUANTUM_SPEED", score: 13000, wpm: 110, time: "01:32" }
+      { rank: 1, name: "SPEED_DEMON", score: 15000, wpm: 120, time: "01:23", avatar: "https://i.pravatar.cc/100?img=6" },
+      { rank: 2, name: "TIME_BENDER", score: 14500, wpm: 118, time: "01:25", avatar: "https://i.pravatar.cc/100?img=7" },
+      { rank: 3, name: "CHRONO_MASTER", score: 14000, wpm: 115, time: "01:28", avatar: "https://i.pravatar.cc/100?img=8" },
+      { rank: 4, name: "TEMPORAL_RUSH", score: 13500, wpm: 112, time: "01:30", avatar: "https://i.pravatar.cc/100?img=9" },
+      { rank: 5, name: "QUANTUM_SPEED", score: 13000, wpm: 110, time: "01:32", avatar: "https://i.pravatar.cc/100?img=10" }
     ]
   },
   {
@@ -56,11 +56,11 @@ const gameScreenshots = [
       statusColor: "bg-blue-500"
     },
     leaderboard: [
-      { rank: 1, name: "ZEN_MASTER", score: 20000, wpm: 85, streak: 150 },
-      { rank: 2, name: "MEDITATION_X", score: 19500, wpm: 82, streak: 145 },
-      { rank: 3, name: "PEACE_WARRIOR", score: 19000, wpm: 80, streak: 140 },
-      { rank: 4, name: "HARMONY_FLOW", score: 18500, wpm: 78, streak: 135 },
-      { rank: 5, name: "SERENITY_NOW", score: 18000, wpm: 75, streak: 130 }
+      { rank: 1, name: "ZEN_MASTER", score: 20000, wpm: 85, streak: 150, avatar: "https://i.pravatar.cc/100?img=11" },
+      { rank: 2, name: "MEDITATION_X", score: 19500, wpm: 82, streak: 145, avatar: "https://i.pravatar.cc/100?img=12" },
+      { rank: 3, name: "PEACE_WARRIOR", score: 19000, wpm: 80, streak: 140, avatar: "https://i.pravatar.cc/100?img=13" },
+      { rank: 4, name: "HARMONY_FLOW", score: 18500, wpm: 78, streak: 135, avatar: "https://i.pravatar.cc/100?img=14" },
+      { rank: 5, name: "SERENITY_NOW", score: 18000, wpm: 75, streak: 130, avatar: "https://i.pravatar.cc/100?img=15" }
     ]
   }
 ];
@@ -70,6 +70,7 @@ export const GameGallery = () => {
   const [scanlinePosition, setScanlinePosition] = useState(0);
   const [glowIntensity, setGlowIntensity] = useState(0.5);
   const [hoveredPlayer, setHoveredPlayer] = useState<number | null>(null);
+  const [sortByWpm, setSortByWpm] = useState(false);
 
   useEffect(() => {
     // Scanline animation
@@ -111,7 +112,7 @@ export const GameGallery = () => {
               ease: "easeInOut"
             }}
           />
-          <span className="text-xs font-jetbrains text-white/70">{status}</span>
+          <span className="text-xs font-syncopate text-white/70 tracking-wider">{status}</span>
         </div>
       );
       case "CRITICAL": return (
@@ -128,7 +129,7 @@ export const GameGallery = () => {
               ease: "easeInOut"
             }}
           />
-          <span className="text-xs font-jetbrains text-white/70">{status}</span>
+          <span className="text-xs font-syncopate text-white/70 tracking-wider">{status}</span>
         </div>
       );
       default: return (
@@ -145,7 +146,7 @@ export const GameGallery = () => {
               ease: "easeInOut"
             }}
           />
-          <span className="text-xs font-jetbrains text-white/70">{status}</span>
+          <span className="text-xs font-syncopate text-white/70 tracking-wider">{status}</span>
         </div>
       );
     }
@@ -154,31 +155,44 @@ export const GameGallery = () => {
   // Generate rank icon
   const getRankIcon = (rank: number) => {
     if (rank === 1) return (
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
         <div className="absolute inset-0 blur-md bg-yellow-400 rounded-full opacity-60 animate-pulse"></div>
-        <Trophy className="w-6 h-6 text-yellow-300" />
+        <div className="rank-badge rank-1 z-10">
+          <Trophy className="w-5 h-5 text-yellow-900" />
+        </div>
       </div>
     );
     
     if (rank === 2) return (
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
         <div className="absolute inset-0 blur-sm bg-gray-300 rounded-full opacity-50"></div>
-        <Trophy className="w-5 h-5 text-gray-300" />
+        <div className="rank-badge rank-2 z-10">
+          <Trophy className="w-4 h-4 text-gray-700" />
+        </div>
       </div>
     );
     
     if (rank === 3) return (
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
         <div className="absolute inset-0 blur-sm bg-amber-700 rounded-full opacity-50"></div>
-        <Trophy className="w-5 h-5 text-amber-700" />
+        <div className="rank-badge rank-3 z-10">
+          <Trophy className="w-4 h-4 text-amber-900" />
+        </div>
       </div>
     );
     
     return (
-      <span className="text-sm font-mono text-white/80 font-bold w-6 h-6 flex items-center justify-center">
-        #{rank}
-      </span>
+      <div className="flex items-center justify-center w-10 h-10 border border-white/20 rounded-full bg-black/40 backdrop-blur-sm">
+        <span className="font-audiowide text-white/80 text-sm">#{rank}</span>
+      </div>
     );
+  };
+  
+  const getSortedLeaderboard = (leaderboardData) => {
+    if (sortByWpm) {
+      return [...leaderboardData].sort((a, b) => b.wpm - a.wpm);
+    }
+    return leaderboardData;
   };
 
   return (
@@ -218,14 +232,16 @@ export const GameGallery = () => {
                   }}
                 />
                 
-                {/* Grid Background */}
-                <div className="absolute inset-0 bg-grid opacity-10"></div>
-                
-                {/* Hexagon Grid */}
-                <div className="absolute inset-0" style={{
-                  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-                  opacity: 0.08 
-                }}></div>
+                {/* Enhanced Grid Background - Different for each mode */}
+                {screenshot.id === 1 && (
+                  <div className="absolute inset-0 hex-grid opacity-10"></div>
+                )}
+                {screenshot.id === 2 && (
+                  <div className="absolute inset-0 bg-grid opacity-10"></div>
+                )}
+                {screenshot.id === 3 && (
+                  <div className="absolute inset-0 neural-grid opacity-10"></div>
+                )}
                 
                 {/* Pulse Glow Effect */}
                 <motion.div 
@@ -248,14 +264,14 @@ export const GameGallery = () => {
                 {/* Content Container */}
                 <div className="absolute inset-0 flex flex-col items-center justify-start p-8 z-10">
                   <div className="w-full max-w-3xl relative">
-                    {/* Header with 3D effect */}
+                    {/* Enhanced Header with 3D effect */}
                     <div className="mb-8 relative">
                       {/* Title with shadow layers for 3D effect */}
                       <div className="relative w-fit mx-auto">
                         {[...Array(6)].map((_, i) => (
                           <motion.h3 
                             key={i}
-                            className={`font-orbitron text-4xl md:text-5xl font-bold text-center absolute top-0 left-0 right-0 text-transparent`}
+                            className={`font-audiowide text-4xl md:text-5xl font-bold text-center absolute top-0 left-0 right-0 text-transparent`}
                             style={{ 
                               textShadow: `0 ${i}px 0 rgba(${i % 2 ? '138, 92, 246' : '255, 255, 255'}, ${0.2 - i * 0.03})`,
                               transform: `translateY(${-i * 0.5}px)`,
@@ -268,7 +284,7 @@ export const GameGallery = () => {
                         
                         {/* Visible title */}
                         <motion.h3 
-                          className="font-orbitron text-4xl md:text-5xl font-bold text-center relative z-10"
+                          className="font-audiowide text-4xl md:text-5xl font-bold text-center relative z-10"
                           style={{
                             WebkitTextStroke: '1px rgba(255,255,255,0.2)',
                             backgroundClip: 'text',
@@ -298,7 +314,7 @@ export const GameGallery = () => {
                       </div>
                       
                       <motion.p 
-                        className="text-white/60 mt-3 mb-6 text-center font-fira relative z-10"
+                        className="text-white/60 mt-3 mb-6 text-center font-rajdhani text-lg relative z-10 tracking-wide"
                         animate={{
                           opacity: [0.6, 0.8, 0.6]
                         }}
@@ -312,8 +328,8 @@ export const GameGallery = () => {
                       </motion.p>
                     </div>
                     
-                    {/* Futuristic 3D Leaderboard Table */}
-                    <div className="relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden">
+                    {/* Enhanced Futuristic 3D Leaderboard Table */}
+                    <div className="relative backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden shadow-2xl">
                       {/* Glow effects behind table */}
                       <motion.div 
                         className="absolute -inset-1 blur-lg opacity-30"
@@ -330,8 +346,8 @@ export const GameGallery = () => {
                         }}
                       />
                       
-                      {/* Header */}
-                      <div className="grid grid-cols-5 gap-4 p-4 bg-black/70 border-b border-white/20 font-jetbrains text-sm uppercase tracking-widest relative backdrop-blur-md">
+                      {/* Enhanced Header */}
+                      <div className="grid grid-cols-12 gap-2 p-4 bg-black/80 border-b border-white/20 font-syncopate text-xs uppercase tracking-widest relative backdrop-blur-md">
                         {/* Header illumination */}
                         <motion.div 
                           className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"
@@ -345,25 +361,32 @@ export const GameGallery = () => {
                           }}
                         />
                         
-                        {/* Header titles */}
-                        <div className="text-primary flex items-center gap-1">
-                          <Award className="w-4 h-4" />
+                        {/* Enhanced Header titles */}
+                        <div className="col-span-1 text-primary flex items-center justify-center">
+                          <Award className="w-4 h-4 mr-1" />
                           <span>Rank</span>
                         </div>
-                        <div className="text-primary flex items-center gap-1">
-                          <Shield className="w-4 h-4" />
+                        <div className="col-span-4 text-primary flex items-center pl-1">
+                          <Shield className="w-4 h-4 mr-1" />
                           <span>Player</span>
                         </div>
-                        <div className="text-primary flex items-center gap-1">
-                          <Star className="w-4 h-4" />
+                        <div className="col-span-3 text-primary flex items-center justify-center">
+                          <Star className="w-4 h-4 mr-1" />
                           <span>Score</span>
                         </div>
-                        <div className="text-primary flex items-center gap-1">
-                          <Zap className="w-4 h-4" />
+                        <div 
+                          className="col-span-2 text-primary flex items-center justify-center cursor-pointer group"
+                          onClick={() => setSortByWpm(!sortByWpm)}
+                        >
+                          <Zap className="w-4 h-4 mr-1" />
                           <span>WPM</span>
+                          {sortByWpm ? 
+                            <ChevronDown className="w-3 h-3 ml-1 opacity-70 group-hover:opacity-100" /> : 
+                            <ChevronUp className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70" />
+                          }
                         </div>
-                        <div className="text-primary flex items-center gap-1">
-                          <Sparkles className="w-4 h-4" />
+                        <div className="col-span-2 text-primary flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 mr-1" />
                           <span>
                             {screenshot.id === 1 ? "Level" : 
                             screenshot.id === 2 ? "Time" : 
@@ -372,12 +395,13 @@ export const GameGallery = () => {
                         </div>
                       </div>
                       
-                      {/* Rows */}
-                      <div className="space-y-0">
-                        {screenshot.leaderboard.map((player, idx) => (
+                      {/* Enhanced Rows */}
+                      <div className="space-y-0 custom-scrollbar-hide" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {getSortedLeaderboard(screenshot.leaderboard).map((player, idx) => (
                           <motion.div 
                             key={player.rank}
-                            className="grid grid-cols-5 gap-4 items-center relative backdrop-blur-sm"
+                            className="grid grid-cols-12 gap-2 items-center relative backdrop-blur-sm animate-subtle-float"
+                            style={{ animationDelay: `${idx * 0.2}s` }}
                             onMouseEnter={() => setHoveredPlayer(player.rank)}
                             onMouseLeave={() => setHoveredPlayer(null)}
                             initial={{ backgroundColor: "rgba(0,0,0,0.4)" }}
@@ -403,15 +427,25 @@ export const GameGallery = () => {
                                   exit={{ opacity: 0 }}
                                 />
                               )}
-                            </AnimatePresence>
+                            </AnimatePresence}
+                            
+                            {/* Player is #1 - special treatment */}
+                            {player.rank === 1 && (
+                              <motion.div 
+                                className="absolute inset-0 animate-highlight pointer-events-none"
+                                style={{ 
+                                  background: `linear-gradient(90deg, transparent, rgba(${currentTheme.accent.replace('#', '')}, 0.1), transparent)`,
+                                  borderLeft: '3px solid rgba(255, 215, 0, 0.8)'
+                                }}
+                              />
+                            )}
                             
                             {/* Animated selection border for top 3 */}
-                            {player.rank <= 3 && (
+                            {player.rank <= 3 && player.rank > 1 && (
                               <motion.div 
                                 className="absolute inset-0 pointer-events-none"
                                 style={{
-                                  borderLeft: player.rank === 1 ? `2px solid rgba(255, 215, 0, 0.6)` :
-                                            player.rank === 2 ? `2px solid rgba(192, 192, 192, 0.6)` :
+                                  borderLeft: player.rank === 2 ? `2px solid rgba(192, 192, 192, 0.6)` :
                                             `2px solid rgba(205, 127, 50, 0.6)`
                                 }}
                                 animate={{
@@ -426,32 +460,109 @@ export const GameGallery = () => {
                             )}
                             
                             {/* Rank */}
-                            <div className="px-5 py-4 text-white/90 flex justify-center">
+                            <div className="col-span-1 px-2 py-4 text-white/90 flex justify-center">
                               {getRankIcon(player.rank)}
                             </div>
                             
-                            {/* Player Name */}
-                            <div className="py-4">
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className={`h-8 w-8 rounded flex items-center justify-center text-xs font-bold`}
-                                  style={{ background: `linear-gradient(135deg, ${currentTheme.accent}60, transparent)` }}
-                                >
-                                  {player.name.charAt(0)}
+                            {/* Enhanced Player Name */}
+                            <div className="col-span-4 py-4">
+                              <div className="flex items-center gap-3">
+                                {/* Avatar with animated border */}
+                                <div className="relative h-10 w-10 rounded-xl overflow-hidden flex-shrink-0">
+                                  <motion.div 
+                                    className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-accent opacity-80 z-10"
+                                    style={{ mixBlendMode: 'overlay' }}
+                                    animate={{
+                                      background: [
+                                        `linear-gradient(45deg, ${currentTheme.accent}80, transparent)`,
+                                        `linear-gradient(225deg, ${currentTheme.accent}80, transparent)`,
+                                        `linear-gradient(45deg, ${currentTheme.accent}80, transparent)`
+                                      ]
+                                    }}
+                                    transition={{
+                                      duration: 3,
+                                      repeat: Infinity,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                  <motion.div 
+                                    className="absolute inset-0 border-2 border-white/30 z-20 rounded-xl"
+                                    animate={{
+                                      boxShadow: [
+                                        `0 0 0px ${currentTheme.accent}40`,
+                                        `0 0 5px ${currentTheme.accent}80`,
+                                        `0 0 0px ${currentTheme.accent}40`,
+                                      ]
+                                    }}
+                                    transition={{
+                                      duration: 2,
+                                      repeat: Infinity,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                  <img 
+                                    src={player.avatar} 
+                                    alt={player.name} 
+                                    className="object-cover h-full w-full"
+                                  />
                                 </div>
-                                <div>
-                                  <div className="text-white font-sourcecodepro font-semibold tracking-wider">
-                                    {player.name.split('_')[0]}
-                                    <span className="text-primary/80">_{player.name.split('_')[1]}</span>
+                                
+                                <div className="flex flex-col">
+                                  <div className="flex items-center">
+                                    <h4 
+                                      className="font-rajdhani font-semibold tracking-wider text-base"
+                                      style={{
+                                        color: player.rank <= 3 ? `${currentTheme.accent}` : 'white'
+                                      }}
+                                    >
+                                      {player.name.split('_')[0]}
+                                      <span className="opacity-70 font-normal">_{player.name.split('_')[1]}</span>
+                                    </h4>
+                                    
+                                    {/* First place badge */}
+                                    {player.rank === 1 && (
+                                      <motion.div 
+                                        className="ml-2 rounded-md px-1 py-0.5 bg-yellow-500/20 border border-yellow-500/30"
+                                        animate={{
+                                          boxShadow: [
+                                            '0 0 0px rgba(234, 179, 8, 0)',
+                                            '0 0 10px rgba(234, 179, 8, 0.5)',
+                                            '0 0 0px rgba(234, 179, 8, 0)'
+                                          ]
+                                        }}
+                                        transition={{
+                                          duration: 2,
+                                          repeat: Infinity,
+                                          ease: "easeInOut"
+                                        }}
+                                      >
+                                        <span className="text-[10px] font-syncopate text-yellow-400">
+                                          TOP
+                                        </span>
+                                      </motion.div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Dynamic tag based on player rank */}
+                                  <div className="flex items-center mt-0.5">
+                                    <span 
+                                      className="text-[10px] opacity-50 font-syncopate"
+                                      style={{ color: player.rank <= 3 ? `${currentTheme.accent}` : 'white' }}
+                                    >
+                                      {player.rank === 1 ? 'LEGENDARY' : 
+                                       player.rank === 2 ? 'ELITE' : 
+                                       player.rank === 3 ? 'VETERAN' : 
+                                       player.rank === 4 ? 'ADVANCED' : 'SKILLED'}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
                             </div>
                             
                             {/* Score with animation for top players */}
-                            <div className="py-4">
+                            <div className="col-span-3 py-4">
                               <motion.div 
-                                className="flex items-center font-mono"
+                                className="flex items-center justify-center font-audiowide"
                                 animate={player.rank <= 3 ? {
                                   textShadow: [
                                     `0 0 8px rgba(${currentTheme.accent.replace('#', '')}, 0.4)`,
@@ -465,16 +576,34 @@ export const GameGallery = () => {
                                   ease: "easeInOut"
                                 }}
                               >
-                                <span className="text-primary mr-1 font-medium">{Math.floor(player.score / 1000)}</span>
-                                <span className="text-white/80">,</span>
-                                <span className="text-white/90">{String(player.score % 1000).padStart(3, '0')}</span>
+                                <div className="relative">
+                                  <span className="text-xl font-bold" style={{ color: player.rank <= 3 ? `${currentTheme.accent}` : 'white' }}>
+                                    {Math.floor(player.score / 1000)}
+                                  </span>
+                                  <span className="text-white/80">,</span>
+                                  <span className="text-white/90">{String(player.score % 1000).padStart(3, '0')}</span>
+                                  
+                                  {/* Score bar indicator */}
+                                  <motion.div 
+                                    className="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full"
+                                    style={{ backgroundColor: currentTheme.accent, width: `${(player.score / gameScreenshots[activeIndex].leaderboard[0].score) * 100}%` }}
+                                    animate={{
+                                      opacity: [0.3, 0.7, 0.3]
+                                    }}
+                                    transition={{
+                                      duration: 2,
+                                      repeat: Infinity,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                </div>
                               </motion.div>
                             </div>
                             
-                            {/* WPM with animated effect for high values */}
-                            <div className="py-4">
+                            {/* WPM with enhanced animated effect */}
+                            <div className="col-span-2 py-4">
                               <motion.div 
-                                className="text-center font-mono flex items-center justify-center"
+                                className="flex flex-col items-center justify-center"
                                 animate={player.wpm > 90 ? {
                                   color: [
                                     'rgba(255,255,255,0.9)',
@@ -488,41 +617,80 @@ export const GameGallery = () => {
                                   ease: "easeInOut"
                                 }}
                               >
-                                <span className="text-2xl font-bold">{player.wpm}</span>
+                                <div className="relative">
+                                  <span 
+                                    className={`text-2xl font-bold ${
+                                      player.wpm > 100 ? 'text-glitch' : ''
+                                    }`}
+                                    style={{
+                                      color: player.rank <= 3 ? `${currentTheme.accent}` : 'white'
+                                    }}
+                                  >
+                                    {player.wpm}
+                                  </span>
+                                  
+                                  {/* Speed indicator dots */}
+                                  <div className="flex space-x-0.5 justify-center mt-1">
+                                    {[...Array(5)].map((_, i) => (
+                                      <motion.div 
+                                        key={i}
+                                        className="h-1 w-1 rounded-full"
+                                        style={{ 
+                                          backgroundColor: i < Math.ceil(player.wpm / 25) ? currentTheme.accent : 'rgba(255,255,255,0.2)',
+                                        }}
+                                        animate={i < Math.ceil(player.wpm / 25) ? {
+                                          opacity: [0.6, 1, 0.6]
+                                        } : {}}
+                                        transition={{
+                                          duration: 1 + i * 0.2,
+                                          repeat: Infinity,
+                                          ease: "easeInOut",
+                                          delay: i * 0.1
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
                               </motion.div>
                             </div>
                             
                             {/* Level/Time/Streak with custom styling */}
-                            <div className="py-4 text-secondary">
-                              <div className="flex items-center justify-center gap-1">
-                                {screenshot.id === 1 && (
-                                  <>
-                                    <span className="text-lg font-bold">LVL</span>
-                                    <div className="relative">
-                                      <div className="absolute -inset-1 rounded-md blur-sm opacity-50" 
-                                        style={{backgroundColor: currentTheme.accent}}></div>
-                                      <div className={`bg-black/30 backdrop-blur-sm border border-white/20 px-2 py-1 rounded font-mono font-bold text-white relative z-10`}>
-                                        {player.level}
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-                                
-                                {screenshot.id === 2 && (
-                                  <div className="font-mono text-white bg-black/30 px-3 py-1 rounded-md border border-white/10 backdrop-blur-sm">
-                                    {player.time}
+                            <div className="col-span-2 py-4 text-secondary flex items-center justify-center">
+                              {screenshot.id === 1 && (
+                                <div className="relative">
+                                  <div className="absolute -inset-1 rounded-md blur-sm opacity-50" 
+                                    style={{backgroundColor: currentTheme.accent}}></div>
+                                  <div className="font-syncopate bg-black/50 backdrop-blur-sm border border-white/20 px-3 py-1 rounded font-bold text-white relative z-10">
+                                    LV{player.level}
                                   </div>
-                                )}
-                                
-                                {screenshot.id === 3 && (
-                                  <div className="flex items-center gap-1">
-                                    <div className="font-mono text-white/90">
-                                      <span className="text-secondary/70 mr-1">×</span>
-                                      {player.streak}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
+                                </div>
+                              )}
+                              
+                              {screenshot.id === 2 && (
+                                <div className="font-audiowide text-white bg-black/30 px-3 py-1 rounded-md border border-white/10 backdrop-blur-sm">
+                                  {player.time}
+                                </div>
+                              )}
+                              
+                              {screenshot.id === 3 && (
+                                <div className="flex items-center">
+                                  <motion.div
+                                    animate={{
+                                      scale: [1, 1.05, 1],
+                                      opacity: [0.8, 1, 0.8]
+                                    }}
+                                    transition={{
+                                      duration: 2,
+                                      repeat: Infinity,
+                                      ease: "easeInOut"
+                                    }}
+                                    className="font-audiowide text-white/90 bg-black/30 px-3 py-1 rounded-md border border-white/10 backdrop-blur-sm"
+                                  >
+                                    <span className="text-blue-400 mr-1">×</span>
+                                    {player.streak}
+                                  </motion.div>
+                                </div>
+                              )}
                             </div>
                           </motion.div>
                         ))}
@@ -538,7 +706,7 @@ export const GameGallery = () => {
                 {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((corner) => (
                   <div 
                     key={corner}
-                    className={`absolute w-6 h-6 border-t-2 border-l-2 ${
+                    className={`absolute w-8 h-8 border-t-2 border-l-2 ${
                       corner === 'top-left' ? 'top-2 left-2' :
                       corner === 'top-right' ? 'top-2 right-2 rotate-90' :
                       corner === 'bottom-left' ? 'bottom-2 left-2 -rotate-90' :
