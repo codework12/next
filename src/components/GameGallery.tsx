@@ -427,7 +427,7 @@ export const GameGallery = () => {
                                   exit={{ opacity: 0 }}
                                 />
                               )}
-                            </AnimatePresence}
+                            </AnimatePresence>
                             
                             {/* Player is #1 - special treatment */}
                             {player.rank === 1 && (
