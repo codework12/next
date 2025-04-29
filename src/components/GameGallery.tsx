@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
@@ -716,4 +717,23 @@ export const GameGallery = () => {
                   isActive 
                     ? { 
                         boxShadow: [
-                          `0 0 0px rgba
+                          `0 0 0px rgba(var(--primary), 0)`,
+                          `0 0 8px rgba(var(--primary), 0.6)`,
+                          `0 0 0px rgba(var(--primary), 0)`
+                        ]
+                      } 
+                    : {}
+                }
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
