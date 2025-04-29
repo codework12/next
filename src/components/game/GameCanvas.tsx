@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { getRandomWords as getSimpleWords } from '@/data/SimpleWords';
 import { getRandomWords as getHardWords } from '@/data/wordList';
 import DesertModal from './DesertModal';
+import { CombatSidebar } from './CombatSidebar';
 
 export interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -94,6 +95,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [playerAcceptedChallenge, setPlayerAcceptedChallenge] = useState(false);
   const [gamePaused, setGamePaused] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [bestScore, setBestScore] = useState(0);
+  const [bestKillStreak, setBestKillStreak] = useState(0);
+  const [bestAccuracy, setBestAccuracy] = useState(0);
+  const [bestCombo, setBestCombo] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -600,6 +606,28 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     };
   }, [useHardWords, gamePaused, playerAcceptedChallenge, difficulty]);
 
+  // Update best scores
+  useEffect(() => {
+    const gameState = gameStateRef.current;
+    if (gameState.score > bestScore) {
+      setBestScore(gameState.score);
+    }
+    if (gameState.combo > bestCombo) {
+      setBestCombo(gameState.combo);
+    }
+    // Calculate accuracy
+    const accuracy = gameState.wordsTyped > 0 
+      ? Math.round((gameState.wordsTyped / (gameState.wordsTyped + gameState.activeWords.length)) * 100) 
+      : 100;
+    if (accuracy > bestAccuracy) {
+      setBestAccuracy(accuracy);
+    }
+    // Kill streak is tracked by combo in this case
+    if (gameState.combo > bestKillStreak) {
+      setBestKillStreak(gameState.combo);
+    }
+  }, [gameStateRef.current.score, gameStateRef.current.combo, gameStateRef.current.wordsTyped]);
+
   return (
     <div className="relative w-full h-full">
       {showLevelUpModal && (
@@ -626,72 +654,34 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           }}
         />
       )}
+
+      {/* Menu Button */}
       <div className="absolute top-4 right-4 z-50">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="relative w-10 h-10 rounded-lg border border-primary/50 bg-background/50 backdrop-blur-sm hover:bg-primary/20 transition-all duration-300">
-              <Menu className="w-4 h-4 text-primary" />
-              <div className="absolute inset-0 bg-primary/20 rounded-lg blur animate-pulse"></div>
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-[400px] bg-black/95 border-primary/50 backdrop-blur-xl p-0">
-            <div className="h-full bg-[radial-gradient(circle_at_center,_var(--primary)_0%,_transparent_65%)] bg-[length:100%_100%] bg-center bg-no-repeat opacity-20 absolute inset-0"></div>
-            <div className="relative h-full flex flex-col gap-8 p-6">
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-colors duration-300">
-                <Avatar className="w-16 h-16 border-2 border-primary/50 shadow-lg shadow-primary/20">
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-white to-primary/60 bg-clip-text text-transparent">
-                    {localStorage.getItem('playerName') || 'Player'}
-                  </h2>
-                  <p className="text-sm text-primary/60">
-                    Difficulty: <span className="text-accent">{difficulty}</span> • Speed: <span className="text-accent">x{gameStateRef.current.difficultySpeedMultiplier}</span>
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 bg-primary/5 border border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 font-mono tracking-wider"
-                  onClick={() => window.location.reload()}
-                >
-                  Restart Game
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 bg-primary/5 border border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 font-mono tracking-wider"
-                  onClick={onGameOver}
-                >
-                  Exit to Menu
-                </Button>
-              </div>
-              <div className="mt-auto space-y-4 p-4 rounded-xl bg-primary/5 border border-primary/20">
-                <h3 className="text-lg font-semibold text-primary/80">Current Stats</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 rounded-lg bg-black/20 border border-primary/10">
-                    <p className="text-sm text-primary/60">Score</p>
-                    <p className="text-xl font-bold text-primary">{gameStateRef.current.score}</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-black/20 border border-primary/10">
-                    <p className="text-sm text-primary/60">Level</p>
-                    <p className="text-xl font-bold text-primary">{gameStateRef.current.level}</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-black/20 border border-primary/10">
-                    <p className="text-sm text-primary/60">Combo</p>
-                    <p className="text-xl font-bold text-primary">{gameStateRef.current.combo}x</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-black/20 border border-primary/10">
-                    <p className="text-sm text-primary/60">HP</p>
-                    <p className="text-xl font-bold text-primary">{gameStateRef.current.playerHP}%</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="relative w-10 h-10 rounded-lg border border-primary/50 bg-background/50 backdrop-blur-sm hover:bg-primary/20 transition-all duration-300"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu className="w-4 h-4 text-primary" />
+          <div className="absolute inset-0 bg-primary/20 rounded-lg blur animate-pulse"></div>
+        </Button>
       </div>
+
+      {/* Combat Sidebar */}
+      <CombatSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onRestart={() => window.location.reload()}
+        onExit={onGameOver}
+        currentScore={gameStateRef.current.score}
+        bestScore={bestScore}
+        bestKillStreak={bestKillStreak}
+        bestAccuracy={bestAccuracy}
+        bestCombo={bestCombo}
+        playerName={localStorage.getItem('playerName') || 'Player'}
+        playerAvatar="/default-avatar.png"
+      />
 
       <canvas
         ref={canvasRef}

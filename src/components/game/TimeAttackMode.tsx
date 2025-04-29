@@ -3,11 +3,13 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { CyberParticles } from '@/components/CyberParticles';
 import { Progress } from '@/components/ui/progress';
-import { Sparkles, Zap, Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sparkles, Zap, Menu, Type } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getRandomWords } from '@/data/wordList';
+import { getRandomWords as getSimpleWords } from '@/data/SimpleWords';
+import { GameSidebar } from './GameSidebar';
 
 interface TimeAttackProps {
   onScoreChange: (score: number) => void;
@@ -37,16 +39,19 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
   const [selectedTime, setSelectedTime] = useState<number>(15);
   const [gameStarted, setGameStarted] = useState(false);
   const [timerStarted, setTimerStarted] = useState(false);
+  const [selectedFont, setSelectedFont] = useState<string>('font-orbitron');
+  const [currentFontIndex, setCurrentFontIndex] = useState(0);
   const { toast } = useToast();
 
   // Track Tab key state
   const [isTabPressed, setIsTabPressed] = useState(false);
 
-  // Generate random sentences using the shared word list
+  // Generate random sentences using both word lists
   const sentences = [
-    getRandomWords(30, true) as string,
-    getRandomWords(40, true) as string,
-    getRandomWords(50, true) as string,
+    // Mix: half from each, or alternate
+    ((Math.random() > 0.5 ? getRandomWords : getSimpleWords)(30, true)) as string,
+    ((Math.random() > 0.5 ? getRandomWords : getSimpleWords)(40, true)) as string,
+    ((Math.random() > 0.5 ? getRandomWords : getSimpleWords)(50, true)) as string,
   ];
 
   // Remove separate 'press any key to start' logic. Start timer and typing together on first valid key.
@@ -172,9 +177,6 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
           setCurrentSentenceIndex(nextIndex);
           setCurrentSentence(shuffledSentences[nextIndex]);
           setUserInput("");
-          setWaitingForFirstKey(true);
-          setGameStarted(false);
-          setTimerStarted(false);
         }
       };
       window.addEventListener('keydown', handleKeyDown);
@@ -219,84 +221,234 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
     setCurrentSentence(newShuffled[0]);
   }, []);
 
+  // Determine timer color based on time left
+  let timerColor = 'from-white to-primary/60';
+  let timerText = 'text-primary';
+  if (timeLeft <= 9) {
+    timerColor = 'from-white to-red-500';
+    timerText = 'text-red-400';
+  } else if (timeLeft <= 19) {
+    timerColor = 'from-white to-orange-400';
+    timerText = 'text-orange-300';
+  } else if (timeLeft <= 29) {
+    timerColor = 'from-white to-yellow-300';
+    timerText = 'text-yellow-400';
+  }
+
+  // Available fonts with display names and class values
+  const fonts = [
+    { name: 'Times New Roman', value: 'font-times' },
+    { name: 'Roboto Mono', value: 'font-roboto-mono' },
+    { name: 'Fira Code', value: 'font-fira-code' },
+    { name: 'JetBrains Mono', value: 'font-jetbrains-mono' },
+    { name: 'Source Code Pro', value: 'font-source-code-pro' },
+    { name: 'Orbitron', value: 'font-orbitron' }
+  ];
+
+  // Handle font change through dropdown or scroll
+  const handleFontChange = (newFont: string) => {
+    setSelectedFont(newFont);
+    const newIndex = fonts.findIndex(font => font.value === newFont);
+    if (newIndex !== -1) {
+      setCurrentFontIndex(newIndex);
+    }
+  };
+
+  // Handle mouse wheel event for font switching
+  const handleWheel = useCallback((event: WheelEvent) => {
+    if (event.deltaY !== 0) {
+      event.preventDefault();
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const newIndex = (currentFontIndex + direction + fonts.length) % fonts.length;
+      setCurrentFontIndex(newIndex);
+      setSelectedFont(fonts[newIndex].value);
+    }
+  }, [currentFontIndex, fonts]);
+
+  // Add wheel event listener
+  useEffect(() => {
+    const textContainer = document.querySelector('.typing-container');
+    if (textContainer) {
+      textContainer.addEventListener('wheel', handleWheel, { passive: false });
+      return () => textContainer.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
+
+  const [wordsFontIndex, setWordsFontIndex] = useState(0);
+  
+  // Available fonts for the typing words
+  const typingFonts = [
+    { name: 'Orbitron', class: 'font-orbitron' },
+    { name: 'Roboto Mono', class: 'font-roboto' },
+    { name: 'Fira Code', class: 'font-fira' },
+    { name: 'JetBrains Mono', class: 'font-jetbrains' },
+    { name: 'Source Code Pro', class: 'font-sourcecodepro' }
+  ];
+
+  // Function to cycle through fonts
+  const cycleFont = () => {
+    setWordsFontIndex((prev) => (prev + 1) % typingFonts.length);
+  };
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Handle menu button click
+  const handleMenuClick = () => {
+    setIsSidebarOpen(true);
+  };
+
+  // Handle menu close
+  const handleMenuClose = () => {
+    setIsSidebarOpen(false);
+  };
+
+  // Handle game restart
+  const handleRestart = () => {
+    window.location.reload();
+    setIsSidebarOpen(false);
+  };
+
+  // Handle exit to menu
+  const handleExit = () => {
+    onGameOver();
+    setIsSidebarOpen(false);
+  };
+
+  const [bestScore, setBestScore] = useState(0);
+  const [bestWpm, setBestWpm] = useState(0);
+  const [bestAccuracy, setBestAccuracy] = useState(0);
+  const [playerName, setPlayerName] = useState(localStorage.getItem('playerName') || 'Player');
+
+  // Update best scores
+  useEffect(() => {
+    if (score > bestScore) {
+      setBestScore(score);
+    }
+    if (wpm > bestWpm) {
+      setBestWpm(wpm);
+    }
+    if (accuracy > bestAccuracy) {
+      setBestAccuracy(accuracy);
+    }
+  }, [score, wpm, accuracy]);
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-background">
-      {/* Time Selection Sidebar */}
-      <div className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-30">
-        {[15, 30, 60, 120].map((duration) => (
-          <button
-            key={duration}
-            onClick={() => startGame(duration)}
-            className={`px-6 py-4 rounded-xl border-2 transition-all duration-300 font-bold text-lg shadow-md focus:outline-none focus:ring-2 focus:ring-primary/60
-              ${selectedTime === duration ? 'bg-primary text-white border-primary scale-105' : 'bg-background/80 text-primary border-primary/30 hover:bg-primary/10'}`}
+      {/* Enhanced Top Bar */}
+      <motion.div 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-3 backdrop-blur-xl border-b border-primary/20 z-50"
+      >
+        {/* Left Section: Time Selection */}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2 p-1 rounded-lg">
+            {[15, 30, 60, 120].map((duration) => (
+              <motion.button
+                key={duration}
+                onClick={() => startGame(duration)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`relative px-4 py-1.5 rounded-md transition-all duration-300 font-bold text-base
+                  ${selectedTime === duration 
+                    ? 'bg-primary text-white shadow-lg shadow-primary/25' 
+                    : 'text-primary/80 hover:text-primary hover:bg-primary/10'}`}
+              >
+                {duration}s
+                {selectedTime === duration && (
+                  <motion.div
+                    layoutId="activeTime"
+                    className="absolute inset-0 bg-primary rounded-md -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* Center Section: Stats */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-12">
+          {/* WPM */}
+          <motion.div 
+            className="flex flex-col items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
           >
-            {duration}s
-          </button>
-        ))}
-      </div>
-
-      {/* Menu Bar */}
-      <div className="absolute top-4 right-4 z-50">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="relative w-10 h-10 rounded-lg border border-primary/50 bg-background/50 backdrop-blur-sm hover:bg-primary/20 transition-all duration-300">
-              <Menu className="w-4 h-4 text-primary" />
-              <div className="absolute inset-0 bg-primary/20 rounded-lg blur animate-pulse"></div>
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-[400px] bg-black/95 border-primary/50 backdrop-blur-xl p-0">
-            <div className="h-full bg-[radial-gradient(circle_at_center,_var(--primary)_0%,_transparent_65%)] bg-[length:100%_100%] bg-center bg-no-repeat opacity-20 absolute inset-0"></div>
-            <div className="relative h-full flex flex-col gap-8 p-6">
-              {/* Player Card */}
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-colors duration-300">
-                <Avatar className="w-16 h-16 border-2 border-primary/50 shadow-lg shadow-primary/20">
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-white to-primary/60 bg-clip-text text-transparent">
-                    Player Name
-                  </h2>
-                  <p className="text-sm text-primary/60">High Score: {score}</p>
-                </div>
-              </div>
-
-              {/* Menu Options */}
-              <div className="space-y-4">
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 bg-primary/5 border border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 font-mono tracking-wider"
-                  onClick={() => window.location.reload()}
-                >
-                  Restart Game
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full h-12 bg-primary/5 border border-primary/20 hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 font-mono tracking-wider"
-                  onClick={onGameOver}
-                >
-                  Exit to Menu
-                </Button>
-              </div>
-
-              {/* Stats Section */}
-              <div className="mt-auto space-y-4 p-4 rounded-xl bg-primary/5 border border-primary/20">
-                <h3 className="text-lg font-semibold text-primary/80">Current Stats</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 rounded-lg bg-black/20 border border-primary/10">
-                    <p className="text-sm text-primary/60">Score</p>
-                    <p className="text-xl font-bold text-primary">{score}</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-black/20 border border-primary/10">
-                    <p className="text-sm text-primary/60">Time Left</p>
-                    <p className="text-xl font-bold text-primary">{timeLeft}s</p>
-                  </div>
-                </div>
-              </div>
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-cyan-400" />
+              <span className="text-xl font-bold text-cyan-400">{wpm}</span>
             </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+            <span className="text-xs text-cyan-400/60 uppercase tracking-wider">WPM</span>
+          </motion.div>
+
+          {/* Timer */}
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", bounce: 0.4 }}
+            className="relative"
+          >
+            <span className={`text-5xl md:text-6xl font-bold orbitron bg-gradient-to-b ${timerColor} bg-clip-text text-transparent drop-shadow-glow`}>
+              {timeLeft}
+              <span className="text-2xl ml-1 font-light">s</span>
+            </span>
+          </motion.div>
+
+          {/* Accuracy */}
+          <motion.div 
+            className="flex flex-col items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold text-pink-400">{accuracy}%</span>
+            </div>
+            <span className="text-xs text-pink-400/60 uppercase tracking-wider">Accuracy</span>
+          </motion.div>
+        </div>
+
+        {/* Right Section: Font Selection */}
+        <div className="flex items-center gap-3">
+          {/* Font Toggle Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={cycleFont}
+            className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all flex items-center gap-2"
+          >
+            <Type className="w-4 h-4" />
+            <span className="text-sm font-medium">{typingFonts[wordsFontIndex].name}</span>
+          </motion.button>
+
+          {/* Menu Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleMenuClick}
+            className="p-2 rounded-lg text-primary/80 hover:text-primary hover:bg-primary/10 transition-all"
+          >
+            <Menu className="w-4 h-4" />
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Game Sidebar */}
+      <GameSidebar
+        isOpen={isSidebarOpen}
+        onClose={handleMenuClose}
+        onRestart={handleRestart}
+        onExit={handleExit}
+        currentScore={score}
+        bestScore={bestScore}
+        bestWpm={bestWpm}
+        bestAccuracy={bestAccuracy}
+        timeLeft={timeLeft}
+        playerName={playerName}
+        playerAvatar="/default-avatar.png"
+      />
 
       {/* Background Effects */}
       <div className="absolute inset-0 bg-radial-gradient opacity-80"></div>
@@ -305,23 +457,13 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
       {/* Animated particles */}
       <CyberParticles />
 
-      {/* Main Typing UI (always visible) */}
-      {/* Timer with visual enhancements */}
-      <motion.div 
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", bounce: 0.4 }}
-        className="relative mb-14"
-      >
-        <div className="absolute -inset-6 bg-primary/20 rounded-full blur-xl animate-pulse-glow"></div>
-        <div className="relative z-10 text-7xl font-bold orbitron text-primary bg-gradient-to-b from-white to-primary/60 bg-clip-text text-transparent">
-          {timeLeft}
-          <span className="text-2xl ml-1 font-light">s</span>
-        </div>
-      </motion.div>
       <div className="max-w-3xl w-full space-y-8 relative z-10">
-        {/* Character-by-character bar */}
-        <div className="overflow-x-auto w-full border border-primary/20 rounded-xl bg-black/30 px-2 py-2 mb-8 whitespace-nowrap" style={{ maxHeight: '3.5rem' }} ref={charBarRef}>
+        {/* Character display */}
+        <div
+          className={`typing-container overflow-x-auto w-full custom-scrollbar-hide ${typingFonts[wordsFontIndex].class}`}
+          style={{ maxHeight: '3.5rem' }}
+          ref={charBarRef}
+        >
           {currentSentence.split('').map((char, idx) => {
             let color = 'text-gray-400';
             if (idx < userInput.length) {
@@ -329,33 +471,16 @@ export const TimeAttackMode = ({ onScoreChange, onWpmChange, onGameOver }: TimeA
             } else if (idx === userInput.length) {
               color = 'text-primary underline';
             }
+            const isSpace = char === ' ';
             return (
               <span
                 key={idx}
-                className={`text-lg md:text-xl font-mono transition-colors duration-200 ${color} ${idx === userInput.length ? 'caret' : ''}`}
-                style={idx === userInput.length ? { borderLeft: '2px solid #a78bfa', animation: 'blink 1s steps(1) infinite' } : {}}
+                className={`text-2xl md:text-3xl transition-colors duration-200 ${color} ${idx === userInput.length ? 'caret' : ''} ${isSpace ? 'mx-1 md:mx-2' : ''}`}
               >
-                {char}
+                {char === ' ' ? '\u00A0' : char}
               </span>
             );
           })}
-        </div>
-      </div>
-      {/* Stats Bar - Redesigned Glassmorphism */}
-      <div className="absolute left-8 bottom-8 flex flex-col gap-3 px-8 py-6 rounded-2xl shadow-xl border border-primary/60 backdrop-blur-md bg-white/10 bg-gradient-to-br from-primary/10 to-black/40" style={{ boxShadow: '0 4px 32px 0 rgba(80, 80, 255, 0.18)' }}>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl font-bold text-cyan-400 drop-shadow-glow">
-            <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a1 1 0 0 1 1 1v2.07A8.001 8.001 0 0 1 20.93 11H23a1 1 0 1 1 0 2h-2.07A8.001 8.001 0 0 1 13 20.93V23a1 1 0 1 1-2 0v-2.07A8.001 8.001 0 0 1 3.07 13H1a1 1 0 1 1 0-2h2.07A8.001 8.001 0 0 1 11 3.07V1a1 1 0 0 1 1-1zm0 4a6 6 0 1 0 0 12A6 6 0 0 0 12 6z"/></svg>
-          </span>
-          <span className="text-2xl font-extrabold text-cyan-300 tracking-wide">WPM</span>
-          <span className="text-3xl font-extrabold text-white ml-2">{wpm}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl font-bold text-pink-400 drop-shadow-glow">
-            <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-          </span>
-          <span className="text-2xl font-extrabold text-pink-300 tracking-wide">Accuracy</span>
-          <span className="text-3xl font-extrabold text-white ml-2">{accuracy}%</span>
         </div>
       </div>
       {/* Tab+Enter Button */}

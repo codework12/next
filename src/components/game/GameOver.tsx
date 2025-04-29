@@ -40,26 +40,34 @@ const glitchAnim = {
 };
 
 export function GameOver({ onRestart, onExit, finalScore, wpm, level }: GameOverProps) {
-  const [showContent, setShowContent] = useState(false);
+  const [showInitialContent, setShowInitialContent] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [showStats, setShowStats] = useState(false);
+  const [showStats, setShowStats] = useState(true);
 
   useEffect(() => {
-    // Simulate loading progress
-    const interval = setInterval(() => {
-      setLoadingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setShowContent(true), 500);
-          setTimeout(() => setShowStats(true), 1000);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 30);
+    // Show initial content for 5 seconds
+    const timer = setTimeout(() => {
+      setShowInitialContent(false);
+      setShowLoading(true);
+      
+      // Start loading progress
+      const interval = setInterval(() => {
+        setLoadingProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            onExit(); // Exit after loading completes
+            return 100;
+          }
+          return prev + 1; // Reduced from 2 to 1 to make loading take longer
+        });
+      }, 30);
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [onExit]);
 
   return (
     <motion.div 
@@ -144,61 +152,13 @@ export function GameOver({ onRestart, onExit, finalScore, wpm, level }: GameOver
         </svg>
       </div>
 
-      {/* Loading Progress Bar */}
+      {/* Main Content with Score */}
       <AnimatePresence>
-        {!showContent && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.2 }}
-            className="relative z-10 w-full max-w-md mx-4"
-          >
-            <div className="text-center mb-8">
-              <motion.div
-                className="text-4xl font-bold mb-2 orbitron relative inline-block"
-                style={{
-                  textShadow: "2px 2px 20px rgba(147, 51, 234, 0.5)",
-                  animation: "glitch 1s infinite",
-                  animationTimingFunction: "steps(2, end)",
-                }}
-                animate={{
-                  textShadow: [
-                    "2px 2px 20px rgba(147, 51, 234, 0.5)",
-                    "2px 2px 20px rgba(168, 85, 247, 0.5)",
-                    "2px 2px 20px rgba(147, 51, 234, 0.5)",
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                GAME OVER
-              </motion.div>
-              <div className="text-primary/60 mt-2">System Shutdown Sequence Initiated</div>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="relative h-2 bg-background/20 rounded-full overflow-hidden border border-primary/20">
-              <motion.div
-                className="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${loadingProgress}%` }}
-                transition={{ duration: 0.5 }}
-              />
-              <div className="absolute inset-0 bg-grid opacity-20" />
-            </div>
-            
-            <div className="mt-2 text-center text-sm text-primary/60 font-mono">
-              Analyzing Performance Data: {loadingProgress}%
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <AnimatePresence>
-        {showContent && (
+        {showInitialContent && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             className="relative z-10 w-full max-w-xl mx-4 bg-background/20 p-8 rounded-3xl border border-primary/30 shadow-2xl backdrop-blur-md"
           >
             {/* Title with Glitch Effect */}
@@ -266,7 +226,7 @@ export function GameOver({ onRestart, onExit, finalScore, wpm, level }: GameOver
                     <div className="absolute inset-0 border border-primary/30 rounded-2xl glow-effect" />
                   </motion.div>
 
-                  {/* Stats Cards with Hover Effects */}
+                  {/* Stats Cards */}
                   <motion.div 
                     initial={{ x: -50, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -278,12 +238,7 @@ export function GameOver({ onRestart, onExit, finalScore, wpm, level }: GameOver
                       <Zap className="w-5 h-5 text-secondary group-hover:animate-pulse" />
                       <span className="text-neutral-400 orbitron">WPM</span>
                     </div>
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                      className="text-2xl font-bold text-white orbitron"
-                    >
+                    <motion.div className="text-2xl font-bold text-white orbitron">
                       {wpm}
                     </motion.div>
                   </motion.div>
@@ -299,54 +254,52 @@ export function GameOver({ onRestart, onExit, finalScore, wpm, level }: GameOver
                       <Star className="w-5 h-5 text-accent group-hover:animate-pulse" />
                       <span className="text-neutral-400 orbitron">Level</span>
                     </div>
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="text-2xl font-bold text-white orbitron"
-                    >
+                    <motion.div className="text-2xl font-bold text-white orbitron">
                       {level}
                     </motion.div>
                   </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            {/* Action Buttons with Cyber Effects */}
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="grid grid-cols-2 gap-4"
-            >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onRestart}
-                className="flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-primary to-secondary rounded-xl font-semibold text-white
-                         hover:from-primary/90 hover:to-secondary/90 transition-all duration-200 
-                         shadow-lg shadow-primary/20 orbitron neon-border relative group overflow-hidden"
+      {/* Loading Progress Bar (shown at the end) */}
+      <AnimatePresence>
+        {showLoading && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative z-10 w-full max-w-md mx-4"
+          >
+            <div className="text-center mb-8">
+              <motion.div
+                className="text-4xl font-bold mb-2 orbitron relative inline-block"
+                style={{
+                  textShadow: "2px 2px 20px rgba(147, 51, 234, 0.5)",
+                  animation: "glitch 1s infinite",
+                  animationTimingFunction: "steps(2, end)",
+                }}
               >
-                <div className="absolute inset-0 bg-grid opacity-10" />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <RotateCcw className="w-5 h-5 animate-spin-slow" />
-                <span className="relative z-10">Reboot System</span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onExit}
-                className="flex items-center justify-center gap-2 py-4 px-6 bg-background/20 rounded-xl font-semibold text-neutral-300
-                         hover:bg-primary/20 hover:text-white transition-all duration-200
-                         border border-primary/30 hover:border-primary/50 orbitron backdrop-blur-sm relative group overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-grid opacity-10" />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Home className="w-5 h-5" />
-                <span className="relative z-10">Exit Simulation</span>
-              </motion.button>
-            </motion.div>
+                GAME OVER
+              </motion.div>
+              <div className="text-primary/60 mt-2">System Shutdown Sequence Initiated</div>
+            </div>
+            
+            <div className="relative h-2 bg-background/20 rounded-full overflow-hidden border border-primary/20">
+              <motion.div
+                className="h-full bg-gradient-to-r from-primary via-secondary to-primary rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${loadingProgress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+              <div className="absolute inset-0 bg-grid opacity-20" />
+            </div>
+            
+            <div className="mt-2 text-center text-sm text-primary/60 font-mono">
+              System Shutdown: {loadingProgress}%
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

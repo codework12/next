@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap');
+
+@layer base {
+  /* Default font for the entire app */
+  body {
+    font-family: 'Orbitron', sans-serif;
+  }
+}
+
+@layer components {
+  /* Font classes with strong specificity */
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif !important;
+  }
+
+  .font-roboto {
+    font-family: 'Roboto Mono', monospace !important;
+  }
+
+  .font-fira {
+    font-family: 'Fira Code', monospace !important;
+  }
+
+  .font-jetbrains {
+    font-family: 'JetBrains Mono', monospace !important;
+  }
+
+  .font-sourcecodepro {
+    font-family: 'Source Code Pro', monospace !important;
+  }
+
+  /* Typing text specific styles */
+  .typing-text {
+    font-family: inherit;
+    transition: font-family 0.2s ease;
+  }
+}
+
+/* Custom scrollbar */
+.custom-scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Style select options */
+select option {
+  padding: 8px;
+  background-color: #1a1a1a;
+} 
