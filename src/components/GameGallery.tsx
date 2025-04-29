@@ -401,16 +401,16 @@ export const GameGallery = () => {
                           <motion.div 
                             key={player.rank}
                             className="grid grid-cols-12 gap-2 items-center relative backdrop-blur-sm animate-subtle-float"
-                            style={{ animationDelay: `${idx * 0.2}s` }}
+                            style={{ 
+                              animationDelay: `${idx * 0.2}s`,
+                              borderBottom: "1px solid rgba(255,255,255,0.08)"
+                            }}
                             onMouseEnter={() => setHoveredPlayer(player.rank)}
                             onMouseLeave={() => setHoveredPlayer(null)}
                             initial={{ backgroundColor: "rgba(0,0,0,0.4)" }}
                             whileHover={{
                               backgroundColor: `rgba(${currentTheme.accent.replace('#', '')}, 0.15)`,
                               transition: { duration: 0.2 } 
-                            }}
-                            style={{
-                              borderBottom: "1px solid rgba(255,255,255,0.08)"
                             }}
                           >
                             {/* Background highlight effect */}
@@ -779,3 +779,4 @@ export const GameGallery = () => {
     </div>
   );
 };
+
